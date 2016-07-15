@@ -19,13 +19,26 @@ import java.util.List;
 /**
  * Created by Tommy on 7/15/2016.
  */
-public class CustomAdapter extends ArrayAdapter<TextView>
+public class CustomAdapter extends ArrayAdapter<ModelClass>
 {
 	Activity mContext;
-	public CustomAdapter(Activity context, List<TextView> views)
+
+	private List<ModelClass> items;
+	public CustomAdapter(Activity context, List<ModelClass> views)
 	{
 		super(context, 0, views);
 		mContext = context;
+		this.items =views;
+	}
+
+	@Override
+	public int getCount() {
+		return items.size();
+	}
+
+	@Override
+	public ModelClass getItem(int position) {
+		return items.get(position);
 	}
 
 	/*Get view from adapter*/
@@ -40,38 +53,21 @@ public class CustomAdapter extends ArrayAdapter<TextView>
 
 		TextView datePickerView = (TextView) itemView.findViewById(R.id.date_picker);
 
+		datePickerView.setTag(R.string.TAG,position);
 		datePickerView.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View view)
 			{
-				DialogFragment newFragment = new DatePickerFragment();
+				DialogFragment newFragment = DatePickerFragment.newInstance((int)view.getTag(R.string.TAG));
 				newFragment.show(mContext.getFragmentManager(), "datePicker");
 			}
 		});
-
+		datePickerView.setText(String.valueOf(getItem(position).getYear())+
+				String.valueOf(getItem(position).getMonth())+
+		String.valueOf(getItem(position).getDay()));
 		return itemView;
 	}
 
-	/*Time Picker*/
-	public static class DatePickerFragment extends DialogFragment
-			implements DatePickerDialog.OnDateSetListener {
 
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			// Use the current date as the default date in the picker
-			final Calendar c = Calendar.getInstance();
-			int year = c.get(Calendar.YEAR);
-			int month = c.get(Calendar.MONTH);
-			int day = c.get(Calendar.DAY_OF_MONTH);
-
-
-			// Create a new instance of DatePickerDialog and return it
-			return new DatePickerDialog(getActivity(), this, year, month, day);
-		}
-
-		public void onDateSet(DatePicker view, int year, int month, int day) {
-			//TODO: set itemView to the date that is picked. However I can't access it from here.
-		}
-	}
 }

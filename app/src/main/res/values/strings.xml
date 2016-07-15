@@ -1,3 +1,4 @@
 <resources>
 	<string name="app_name">DatePickerFragment</string>
+	<string name="TAG">11</string>
 </resources>

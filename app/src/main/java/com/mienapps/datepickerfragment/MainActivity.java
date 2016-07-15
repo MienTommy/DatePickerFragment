@@ -9,20 +9,39 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements DatePickerFragment.SetDate
 {
 
+	private ArrayList<ModelClass> arrayOfViews;
+
+	private CustomAdapter adapter;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		ArrayList<TextView> arrayOfViews = new ArrayList<TextView>();
-		TextView date_Picker = (TextView) findViewById(R.id.date_picker);
-		arrayOfViews.add(date_Picker);
+		arrayOfViews = new ArrayList<ModelClass>();
 
-		CustomAdapter adapter = new CustomAdapter(this, arrayOfViews);
+		for(int i=0;i<10;i++)
+		{
+			arrayOfViews.add(new ModelClass());
+		}
+		TextView date_Picker = (TextView) findViewById(R.id.date_picker);
+		//arrayOfViews.add(date_Picker);
+
+		adapter = new CustomAdapter(this, arrayOfViews);
 		ListView listView = (ListView) findViewById(R.id.main_list_view);
 		listView.setAdapter(adapter);
+	}
+
+
+	@Override
+	public void dateSet(int pos,int year, int month, int day) {
+
+		ModelClass modelClass = arrayOfViews.get(pos);
+		modelClass.setYear(year);
+		modelClass.setMonth(month);
+		modelClass.setDay(day);
+		adapter.notifyDataSetChanged();
 	}
 }
