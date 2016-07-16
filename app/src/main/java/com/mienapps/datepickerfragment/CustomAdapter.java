@@ -19,59 +19,51 @@ import java.util.List;
 /**
  * Created by Tommy on 7/15/2016.
  */
-public class CustomAdapter extends ArrayAdapter<TextView>
-{
-	Activity mContext;
-	public CustomAdapter(Activity context, List<TextView> views)
-	{
-		super(context, 0, views);
-		mContext = context;
-	}
+public class CustomAdapter extends ArrayAdapter<ModelClass> {
+    Activity mContext;
 
-	/*Get view from adapter*/
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
-	{
-		View itemView = convertView;
-		if (convertView == null)
-		{
-			itemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
-		}
+    private List<ModelClass> items;
 
-		TextView datePickerView = (TextView) itemView.findViewById(R.id.date_picker);
+    public CustomAdapter(Activity context, List<ModelClass> views) {
+        super(context, 0, views);
+        mContext = context;
+        this.items = views;
+    }
 
-		datePickerView.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View view)
-			{
-				DialogFragment newFragment = new DatePickerFragment();
-				newFragment.show(mContext.getFragmentManager(), "datePicker");
-			}
-		});
+    @Override
+    public int getCount() {
+        return items.size();
+    }
 
-		return itemView;
-	}
+    @Override
+    public ModelClass getItem(int position) {
+        return items.get(position);
+    }
 
-	/*Time Picker*/
-	public static class DatePickerFragment extends DialogFragment
-			implements DatePickerDialog.OnDateSetListener {
+    /*Get view from adapter*/
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View itemView = convertView;
+        if (convertView == null) {
+            itemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
+        }
 
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			// Use the current date as the default date in the picker
-			final Calendar c = Calendar.getInstance();
-			int year = c.get(Calendar.YEAR);
-			int month = c.get(Calendar.MONTH);
-			int day = c.get(Calendar.DAY_OF_MONTH);
+        TextView datePickerView = (TextView) itemView.findViewById(R.id.date_picker);
+
+        datePickerView.setTag(R.string.TAG, position);
+        datePickerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerFragment newFragment = DatePickerFragment.newInstance((int) view.getTag(R.string.TAG));
+                newFragment.setListener(mContext);
+                newFragment.show(mContext.getFragmentManager(), "datePicker");
+            }
+        });
+        datePickerView.setText(String.valueOf(getItem(position).getYear()) +
+                String.valueOf(getItem(position).getMonth()) +
+                String.valueOf(getItem(position).getDay()));
+        return itemView;
+    }
 
 
-			// Create a new instance of DatePickerDialog and return it
-			return new DatePickerDialog(getActivity(), this, year, month, day);
-		}
-
-		public void onDateSet(DatePicker view, int year, int month, int day) {
-			//TODO: set itemView to the date that is picked. However I can't access it from here.
-		}
-	}
 }
